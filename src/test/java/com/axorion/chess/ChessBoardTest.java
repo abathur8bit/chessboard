@@ -18,9 +18,7 @@
 
 package com.axorion.chess;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 /**
  * Unit test for ChessBoard.
@@ -39,33 +37,32 @@ public class ChessBoardTest extends TestCase
 
     public void testFenInitialPosition() {
         ChessBoard board = new ChessBoard();
-        String expected = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
-        System.out.println("fen=["+board.fen()+"]");
-        assertEquals(expected,board.fen());
+        String expected = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        System.out.println("toFen=["+board.toFen()+"]");
+        assertEquals(expected,board.toFen());
     }
 
     public void testFenPosition() {
-        String position =
+        String positionAfterE2E4 =
                 "rnbqkbnr"+
-                "p   pppp"+
+                "pppppppp"+
                 "        "+
-                " ppp    "+
-                "    PP  "+
                 "        "+
-                "PPPP  PP"+
+                "    P   "+
+                "        "+
+                "PPPP PPP"+
                 "RNBQKBNR";
         ChessBoard board = new ChessBoard();
-        board.setPosition(position);
-        String expected = "rnbqkbnr/p3pppp/8/1ppp4/4PP2/8/PPPP2PP/RNBQKBNR";
-        //                "rnbqkbnr/p3pppp/8/1ppp4/4PP2/8/PPPP2PP/RNBQKBNR w KQkq - 0 4"     fen from shredder
-        System.out.println("fen=["+board.fen()+"]");
-        assertEquals(expected,board.fen());
+        board.setWhoMoves(ChessBoard.BLACK);
+        board.setPosition(positionAfterE2E4);
+        String expected = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"; //note that En passant target square not implemented
+        System.out.println("toFen=["+board.toFen()+"]");
+        assertEquals(expected,board.toFen());
     }
 
     public void testSetPosition() {
         ChessBoard board = new ChessBoard();
         board.setPosition(initialPosition);
         assertEquals(initialPosition,board.toLetters());
-
     }
 }

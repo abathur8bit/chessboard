@@ -19,18 +19,26 @@
 package com.axorion.chess;
 
 /**
- * Chess board that keeps track of the state, generates fen notation, and validates moves.
+ * Chess board that keeps track of the state, generates toFen notation, and validates moves.
  */
 public class ChessBoard
 {
-    int WHITE = 'w';
-    int BLACK = 'b';
-    int EMPTY_SQUARE = ' ';
+    public static final int WHITE = 'w';
+    public static final int BLACK = 'b';
+    public static final int EMPTY_SQUARE = ' ';
 
-    String whitePieceLetters = "PNBRQK";
     String blackPieceLetters = "pnbrqk";
+    String whitePieceLetters = "PNBRQK";
 
     int[] gameBoard = new int[64];
+    int currentMove = WHITE;
+    int halfMoveCounter = 0;
+    int fullMoveCounter = 0;
+    
+    boolean castleWhiteKingSide = true;
+    boolean castleWhiteQueenSide = true;
+    boolean castleBlackKingSide = true;
+    boolean castleBlackQueenSide = true;
 
     String boardLetters =
             "rnbqkbnr"+
@@ -58,15 +66,21 @@ public class ChessBoard
         }
     }
 
+    public void setWhoMoves(int color) {
+        if(color == WHITE || color == BLACK) {
+            currentMove = color;
+        }
+    }
+
     public String toLetters() {
         StringBuilder letters = new StringBuilder();
-        for(int i=0; i<gameBoard.length; ++i) {
-            letters.append((char)gameBoard[i]);
+        for(int value : gameBoard) {
+            letters.append((char)value);
         }
         return letters.toString();
     }
 
-    public String fen() {
+    public String toFen() {
         StringBuilder fen = new StringBuilder();
         int emptyCount = 0;
 
@@ -89,6 +103,18 @@ public class ChessBoard
                 fen.append((char)gameBoard[i]);
             }
         }
+        fen.append(" "+(char)currentMove+" ");
+
+        fen.append((castleWhiteKingSide ?"K":""));
+        fen.append((castleWhiteQueenSide?"Q":""));
+        fen.append((castleBlackKingSide ?"k":""));
+        fen.append((castleBlackQueenSide?"q":""));
+
+        fen.append(" "+"-");  //todo En passant target square not implemented
+
+        fen.append(" "+halfMoveCounter);
+        fen.append(" "+(fullMoveCounter+1));
+
         return fen.toString();
     }
 }
