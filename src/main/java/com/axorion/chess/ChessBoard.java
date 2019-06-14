@@ -18,8 +18,11 @@
 
 package com.axorion.chess;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Chess board that keeps track of the state, generates toFen notation, and validates moves.
+ * Chess board that keeps track of the state, generates FEN notation.
  */
 public class ChessBoard
 {
@@ -29,6 +32,8 @@ public class ChessBoard
 
     String blackPieceLetters = "pnbrqk";
     String whitePieceLetters = "PNBRQK";
+
+    ArrayList<String> moveCard = new ArrayList<String>();
 
     int[] gameBoard = new int[64];
     int currentMove = WHITE;
@@ -50,6 +55,12 @@ public class ChessBoard
             "PPPPPPPP"+
             "RNBQKBNR";
 
+    String horz = "abcdefgh";
+    String vert = "87654321";
+
+    int[] validPawnMoves = {-1,-2};
+    int[] validKnightMoves = {15,17};
+
     public ChessBoard() {
         resetBoard();
     }
@@ -58,6 +69,7 @@ public class ChessBoard
         for(int i=0; i<64; ++i) {
             gameBoard[i] = boardLetters.charAt(i);
         }
+        moveCard.clear();
     }
 
     public void setPosition(String letters) {
@@ -70,6 +82,90 @@ public class ChessBoard
         if(color == WHITE || color == BLACK) {
             currentMove = color;
         }
+    }
+
+    /**
+     * Convert the board coordinate to an index with 0 being the upper left corner.
+     * used internally.
+     *
+     * @param coord Board coordinate like "e1"
+     * @return index into the gameBoard array.
+     */
+    public int boardToIndex(String coord) {
+        int x=0,y=0,c=0;
+
+        c = coord.charAt(0);
+        for(int i=0; i<8; i++) {
+            if(horz.charAt(i) == c) {
+                x = i;
+                break;
+            }
+        }
+
+        c = coord.charAt(1);
+        for(int i=0; i<8; i++) {
+            if(vert.charAt(i) == c) {
+                y = i;
+                break;
+            }
+        }
+
+        int index= y*8+x;
+        return index;
+    }
+
+    /** A list of all the moves in chess coordinates like "e2e3". Always has from and to coordinates. */
+    public List<String> getScoreCard() {
+        return moveCard;
+    }
+
+    /** Returns all the moves in a single string in chess board "e1e3" format. For example "g1f3 b8c6 b1c3". */
+    public String getMoveString() {
+        StringBuilder moves = new StringBuilder();
+        int fullMove = 0;
+        for(int i=0; i<moveCard.size(); i++) {
+            if(i>0) {
+                moves.append(" ");
+            }
+            moves.append(moveCard.get(i));
+        }
+        return moves.toString();
+    }
+
+    /** Return what piece is at the chess coordinate specified, like "a1" would return 'R' on a new board. */
+    public int pieceAt(String s) {
+        if(s.length() == 2) {
+            int index = boardToIndex(s.substring(0,2));
+            return gameBoard[index];
+        }
+        return 0;
+    }
+
+    /** Enter a move in the form of "e2e4. Returns if the move was valid. */
+    public boolean move(String s) {
+        if(s.length() == 4) {
+            String from = s.substring(0,2);
+            String to = s.substring(2);
+            int fromIndex = boardToIndex(from);
+            int toIndex = boardToIndex(to);
+
+            boolean isCapture = gameBoard[toIndex] != EMPTY_SQUARE;
+            gameBoard[toIndex] = gameBoard[fromIndex];
+            gameBoard[fromIndex] = EMPTY_SQUARE;
+            moveCard.add(s);
+            halfMoveCounter++;
+            if(gameBoard[toIndex] == 'p' || gameBoard[toIndex] == 'P' || isCapture) {
+                halfMoveCounter = 0;
+            }
+            if(currentMove == WHITE) {
+                currentMove = BLACK;
+            } else {
+                currentMove = WHITE;
+                fullMoveCounter++;
+            }
+            return true;
+        }
+        return false;
     }
 
     public String toLetters() {
