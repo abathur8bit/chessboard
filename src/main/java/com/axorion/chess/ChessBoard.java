@@ -22,7 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Chess board that keeps track of the state, generates FEN notation.
+ * Chess board that keeps track of the state, and generates FEN notation. When constructed, you get a new board setup.
+ * As you make moves, tell ChessBoard about them, and it will keep a log of all moves, and be able to export them as
+ * a PGN as well as show the FEN notation of a given position in the game.
+ *
+ * Methods you are most interested in, besides the constructor is <b>move(), pieceAt(), validate()</b>
  */
 public class ChessBoard
 {
@@ -63,6 +67,10 @@ public class ChessBoard
 
     public ChessBoard() {
         resetBoard();
+    }
+
+    public int numSquares() {
+        return gameBoard.length;
     }
 
     public void resetBoard() {
@@ -114,6 +122,12 @@ public class ChessBoard
         return index;
     }
 
+    public String indexToBoard(int index) {
+        int y=index/8;
+        int x=index-y*8;
+        return String.format("%s%s",horz.charAt(x),vert.charAt(y));
+    }
+
     /** A list of all the moves in chess coordinates like "e2e3". Always has from and to coordinates. */
     public List<String> getScoreCard() {
         return moveCard;
@@ -132,6 +146,17 @@ public class ChessBoard
         return moves.toString();
     }
 
+    /**
+     * Return what pieces is at the given index in the board. Top left is 0, bottom right is 63. Will return an integer
+     * representing the ascii value (char) of the letter, or a space.
+     *
+     * @param index index into the gameBoard.
+     * @return Letter of the piece, or a space for an empty square.
+     */
+    public char pieceAt(int index) {
+        return (char)gameBoard[index];
+    }
+
     /** Return what piece is at the chess coordinate specified, like "a1" would return 'R' on a new board. */
     public int pieceAt(String s) {
         if(s.length() == 2) {
@@ -141,7 +166,7 @@ public class ChessBoard
         return 0;
     }
 
-    /** Enter a move in the form of "e2e4. Returns if the move was valid. */
+    /** Enter a move in the form of "e2e4". Returns if the move was valid. */
     public boolean move(String s) {
         if(s.length() == 4) {
             String from = s.substring(0,2);
@@ -166,6 +191,17 @@ public class ChessBoard
             return true;
         }
         return false;
+    }
+
+    /**
+     * Validate a move in the form "e2e4" and returns if the move is valid. A valid move is one the piece can make that
+     * doesn't leave the king in check, is a move the piece can make, like making sure a pawn isn't moved backwards, and
+     * the correct color is moved.
+     *
+     * @return true if the move is okay to make, false otherwise.
+     */
+    public boolean validate(String move) {
+        return true;    //not yet implemented
     }
 
     public String toLetters() {

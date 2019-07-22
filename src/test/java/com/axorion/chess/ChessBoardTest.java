@@ -37,6 +37,12 @@ public class ChessBoardTest extends TestCase
                 "PPPPPPPP"+
                 "RNBQKBNR";
 
+    public void testIndexToBoard() {
+        ChessBoard board = new ChessBoard();
+        assertEquals("a8",board.indexToBoard(0));
+        assertEquals("a1",board.indexToBoard(7*8));
+    }
+
     public void testFenInitialPosition() {
         ChessBoard board = new ChessBoard();
         String expected = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -84,6 +90,13 @@ public class ChessBoardTest extends TestCase
         assertEquals('Q',board.pieceAt("d1"));
     }
 
+    public void testPieceIndex() {
+        ChessBoard board = new ChessBoard();
+        assertEquals('r',board.pieceAt(0));
+        assertEquals('p',board.pieceAt(8));
+        assertEquals('R',board.pieceAt(8*8-1));
+    }
+
     public void testFENAfterSinglePawnMove() {
         ChessBoard board = new ChessBoard();
         board.move("e2e4");
@@ -91,6 +104,7 @@ public class ChessBoardTest extends TestCase
         System.out.println("toFen=["+board.toFen()+"]");
         assertEquals(expected,board.toFen());
     }
+
     public void testFENAfterSingleKnightMove() {
         ChessBoard board = new ChessBoard();
         board.move("g1f3");
@@ -138,4 +152,5 @@ public class ChessBoardTest extends TestCase
     rnbqkb1r/pppp1ppp/5n2/4p3/4P3/3P1N2/PPP1BPPP/RNBQK2R w KQkq - 3 5
     rnbqk2r/ppppbppp/5n2/4p3/4P3/3P1N2/PPP2PPP/RNBQKB1R w KQkq - 5 6
      */
+
 }
